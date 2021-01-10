@@ -1,4 +1,4 @@
-// #include <bits/stdc++.h> //<<<<<
+// Everything needs further more testing.
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -30,6 +30,7 @@ int subject_days[subject_num];
 int subject_units[subject_num];
 string subject_periods[subject_num];
 int regeistered_indexes[subject_num];
+int total_units = 0;
 
 // Functions:
 // Prinall() >>  Where you can edit the input. But I am too lazy to write it.
@@ -240,7 +241,7 @@ bool collision(int in, int counter)
 //Should have used vector to make deletion easeir?
 void review_register(int *counter)
 {
-    int total_units = 0;
+    total_units = 0;
     int in;
     cout << "These are the subjects you have registered: " << '\n';
     for (int i = 0; i < *counter; i++)
@@ -248,10 +249,13 @@ void review_register(int *counter)
         cout << '\n';
         cout << regeistered_indexes[i] << "- " << subject_names[regeistered_indexes[i]] << ' ' << subject_codes[regeistered_indexes[i]] << ' ';
         cout << subject_days[regeistered_indexes[i]] << ' ' << subject_periods[regeistered_indexes[i]] << ' ' << subject_group[regeistered_indexes[i]] << ' ' << subject_units[regeistered_indexes[i]];
-        total_units += subject_units[regeistered_indexes[i]]; // Caculates it twice.
+
+        if(subject_codes[regeistered_indexes[i]] != subject_codes[regeistered_indexes[i + 1]])
+        {
+            total_units += subject_units[regeistered_indexes[i]];
+        }
     }
-    cout << '\n'
-         << "Total units: " << total_units << '\n';
+    cout << '\n' << "Total units: " << total_units << '\n';
     cout << "If you are done with reviewing registeration enter 0, if you want to delete a subject press -1: ";
     cin >> in;
     //Another if condition for -1?
@@ -294,13 +298,14 @@ void output(int counter)
     table.open("output.csv");
     for(int i = 0; i < counter; i++)
     {
-        table << subject_names[regeistered_indexes[i]] << " ,";
-        table << subject_codes[regeistered_indexes[i]] << " ,";
-        table << subject_units[regeistered_indexes[i]] << " ,";
-        table << subject_group[regeistered_indexes[i]] << " ,";
+        table << subject_names[regeistered_indexes[i]] << ",";
+        table << subject_codes[regeistered_indexes[i]] << ",";
+        table << subject_units[regeistered_indexes[i]] << ",";
+        table << subject_group[regeistered_indexes[i]] << ",";
         table << subject_days[regeistered_indexes[i]] << ",";
         table << subject_periods[regeistered_indexes[i]] << '\n';
     }
+    table << total_units << '\n';
     table.close();
     //A way to excute script.py should be added here.
     return;
