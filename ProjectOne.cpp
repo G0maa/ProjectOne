@@ -6,23 +6,12 @@ using namespace std;
 
 //Change if needed please notice that this includes
 //Subjects in all groups e.g.: If you have subject A in group 1 and 2
-//then subject_num will equal 2, or 4 including sections.
-const int subject_num = 101; // added one because 1-indexed.
+//then subject_num will equal 2, or 4 if it has sections.
+//Added one because 1-indexed.
+const int subject_num = 101; 
 
-//Added recently beaware of bugs.
-// Arrays that hold the input.
-// PLease notice that the input is like this:
-// SubjectName (no spaces) - Subject Code - Subject units:
-// Day Periods Group number
-// Prototype:
-// DS INF210 3
-// 1 1-2 1 // First day from the first to the second period, Group One.
-// 4 4-6 1 // Lecture then Section or vice versa.
-// 2 1-2 2
-// 4 1-3 2
-// 0 // Exit the subject
-// 0 // Exit the function
-// IF INPUT WHERE WRONG YOU WILL HAVE TO RE-ENTER IT AGAIN.. Sorry, I have not studied this much flexability yet.
+//Please read README.md and see Input_Prototype.txt to get how's the input formatted.
+//If input is wrong you will have to re-do it all again.
 string subject_names[subject_num];
 string subject_codes[subject_num];
 int subject_group[subject_num];
@@ -33,7 +22,6 @@ int regeistered_indexes[subject_num];
 int total_units = 0;
 
 // Functions:
-// Prinall() >>  Where you can edit the input. But I am too lazy to write it.
 // Input function, takes oredered input.
 void input(int *subject_count);
 // void sort(string subject_names[subject_num], string subject_codes[subject_num], int subject_group[], int subject_days[], int subject_units[], string subject_periods[subject_num], int* subject_count);
@@ -52,25 +40,25 @@ void review_register(int *counter);
 void deletion(int in, int *counter);
 // Function that converts the registered_indexes[] to a .csv, for script.py to handle it and convert it (finally) to .xlsx.
 void output(int counter);
+
 // In future hopefully there will be a special function that creates every possible table from input.
 // magic()
+// Prinall() >>  Where you can edit the input. But I am too lazy to write it.
 
 int main()
 {
-    // Input arrays were declared in main, but lately realised that if declared globally it would be
-    // much much much easier to delcare functions and less complex :)
     int subject_count = 1;
     input(&subject_count);
-    print_subjects(&subject_count);
     reg(&subject_count);
     return 0;
 }
 
+// <<Functions start:>>
 void input(int *subject_count)
 {
     for (int i = 1; i < subject_num; i++)
     {
-        cout << "If done with input type 0 then Enter." << '\n';
+        cout << "\nIf done with input type 0 then Enter.\n";
         cin >> subject_names[i];
         if (subject_names[i] == "0")
             break;
@@ -97,6 +85,7 @@ void input(int *subject_count)
     }
 }
 
+
 void print_subjects(int *subject_count)
 {
     for (int i = 1; i < *subject_count; i++)
@@ -106,30 +95,34 @@ void print_subjects(int *subject_count)
             cout << i << "- " << subject_names[i] << ' ' << ' ' << subject_codes[i] << ' ' << subject_units[i] << '\n';
         }
     }
+    cout << "Choose one subject (using its index) to show its lectures and sections: ";
 }
 
+
+// There are flow issues in this program.
 void reg(int *subject_count)
 {
     int in, counter = 0;
     bool flag;
     while (true)
     {
-        cout << "Print subjects: -1" << '\n'
-             << "Print Registered/Edit subjects: -2" << '\n';
-        cout << "Choose one subject (using its index) to show its lectures and sections." << '\n';
-        cout << "If done with registering enter 0." << '\n';
+        cout << "----------------------------\n";
+        cout << "Print subjects: -1" << '\n';
+        cout << "Print Registered/Edit subjects: -2" << '\n';
+        cout << "If done with registering enter 0: ";
         flag = false;
         cin >> in;
         if (in == 0) // <<<
         {
+            review_register(&counter);
             output(counter);
             return;
         }
         if (in == -1)
         {
             print_subjects(subject_count);
-            continue; // <<<<
         }
+
         if (in == -2)
         {
             review_register(&counter);
@@ -138,9 +131,12 @@ void reg(int *subject_count)
             // review, (delete, finish.) -> Back to this function.
             // counter will be passed by refrence in case of deletion.
         }
-        print_chosen(in, counter, subject_count); // print all periods of chosen subject index.
         cin >> in;
-        if (in == 0) // <<<<<<???
+        if (in == 0) continue;
+        print_chosen(in, counter, subject_count); // print all periods of chosen subject index.
+        cout << "Insert index of the subject you wish to register: ";
+        cin >> in;
+        if (in == 0)
             continue;
 
         if (in < 0 || in > *subject_count)
@@ -161,7 +157,6 @@ void reg(int *subject_count)
         if (flag)
             continue;
 
-        //Collision function
         if (collision(in, counter) == false)
             continue;
 
@@ -177,6 +172,7 @@ void reg(int *subject_count)
 
 void print_chosen(int in, int counter, int *subject_count)
 {
+    cout << "----------------------------\n";
     for (int i = 0; i < counter; i++)
     {
         if (subject_codes[regeistered_indexes[i]] == subject_codes[in])
@@ -229,21 +225,23 @@ bool collision(int in, int counter)
         }
     }
     // This part could be moved to where the function is called, instead of recursion call it twice in reg().
+    // I am not sure if this works correctly or not.
     if (subject_group[in] == subject_group[in + 1] && subject_codes[in] == subject_codes[in + 1])
     {
         return collision(in + 1, counter);
     }
-    cout << '\n'
-         << "Registered successfully : )\n";
+
+    cout << "\n<<Registered successfully : )>>\n\n";
     return true;
 }
 
-//Should have used vector to make deletion easeir?
+//Should have used vector to make deletion easeier, or any DS?
 void review_register(int *counter)
 {
+    cout << "----------------------------\n";
     total_units = 0;
     int in;
-    cout << "These are the subjects you have registered: " << '\n';
+    cout << "\nThese are the subjects you have registered: ";
     for (int i = 0; i < *counter; i++)
     {
         cout << '\n';
@@ -258,13 +256,15 @@ void review_register(int *counter)
     cout << '\n' << "Total units: " << total_units << '\n';
     cout << "If you are done with reviewing registeration enter 0, if you want to delete a subject press -1: ";
     cin >> in;
-    //Another if condition for -1?
+
     if (in == 0)
         return;
+
     if (in == -1)
     {
         cout << "Enter the index of the subject you wish to delete: ";
         cin >> in;
+        if(in == 0) return;
         //Deletion of section/lecture first, so indexes remain the same.
         if (subject_codes[in + 1] == subject_codes[in] && subject_group[in + 1] == subject_group[in])
         {
@@ -282,7 +282,8 @@ void deletion(int in, int *counter)
     {
         if (regeistered_indexes[i] == in)
         {
-            for (int j = i; j < *counter - 1; j++) //You can get out of range, if you really want that.
+            //You can get out of range, if you really want that
+            for (int j = i; j < *counter - 1; j++)
             {
                 swap(regeistered_indexes[j], regeistered_indexes[j + 1]);
             }
@@ -307,6 +308,9 @@ void output(int counter)
     }
     table << total_units << '\n';
     table.close();
+    cout << "----------------------------\n";
+    cout << "Your academic schedule is now finished, now execute script.py, then open table.xlsx";
+    cout << "\n----------------------------";
     //A way to excute script.py should be added here.
     return;
 }
