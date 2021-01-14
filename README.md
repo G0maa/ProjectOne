@@ -16,4 +16,4 @@ pip install openpyxl
 The program isn't finished yet, in fact there are lots of bugs,
 and the final result (spredsheet) looks awful.
 
-## There should be several updates to this readme.
+There should be several updates to this readme, and the project in general.
